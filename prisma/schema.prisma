@@ -1,0 +1,276 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               Int                @id @default(autoincrement())
+  email            String             @unique
+  isActive         Boolean            @default(true)
+  firstName        String
+  lastName         String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  Note             Note[]
+  ShoppingListItem ShoppingListItem[]
+  Order            Order[]
+  ReturnOrder      ReturnOrder[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String   @default("")
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  regularStock Int @default(0)
+
+  picture File? @relation(fields: [fileId], references: [id])
+  fileId  Int?
+
+  ItemNumber         ItemNumber[]
+  BoxedProductAmount BoxedProductAmount[]
+  Note               Note[]
+  ProductCountItem   ProductCountItem[]
+  ShoppingListItem   ShoppingListItem[]
+  OrderItem          OrderItem[]
+  ReturnOrderItem    ReturnOrderItem[]
+}
+
+// Hoeveel zitten er in een doos?
+// Dit kan verschillen per groothandel :(
+model BoxedProductAmount {
+  id        Int      @id @default(autoincrement())
+  amount    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  store     Store   @relation(fields: [storeId], references: [id])
+  storeId   Int
+}
+
+// Groothandel
+model Store {
+  id                 Int                  @id @default(autoincrement())
+  name               String
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  ItemNumber         ItemNumber[]
+  Order              Order[]
+  BoxedProductAmount BoxedProductAmount[]
+  ShoppingListItem   ShoppingListItem[]
+  ReturnOrder        ReturnOrder[]
+}
+
+// Artikelnummer bij een groothandel
+model ItemNumber {
+  id        Int      @id @default(autoincrement())
+  code      String
+  product   Product  @relation(fields: [productId], references: [id])
+  productId Int
+  store     Store    @relation(fields: [storeId], references: [id])
+  storeId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  store   Store @relation(fields: [storeId], references: [id])
+  storeId Int
+
+  User   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  OrderItem OrderItem[]
+}
+
+model OrderItem {
+  id     Int @id @default(autoincrement())
+  amount Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
+}
+
+// Iets terugsturen
+model ReturnOrder {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  date DateTime
+
+  store   Store @relation(fields: [storeId], references: [id])
+  storeId Int
+
+  User   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  ReturnOrderItem ReturnOrderItem[]
+}
+
+model ReturnOrderItem {
+  id     Int @id @default(autoincrement())
+  amount Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  returnOrder   ReturnOrder @relation(fields: [returnOrderId], references: [id])
+  returnOrderId Int
+}
+
+model Note {
+  id        Int      @id @default(autoincrement())
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  Product   Product? @relation(fields: [productId], references: [id])
+  productId Int?
+}
+
+model File {
+  id        Int       @id @default(autoincrement())
+  name      String
+  url       String
+  mimeType  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Product   Product[]
+}
+
+// Voorraadtelling
+model ProductCount {
+  id      Int     @id @default(autoincrement())
+  ordered Boolean @default(false)
+
+  ProductCountItem ProductCountItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ProductCountItem {
+  id     Int @id @default(autoincrement())
+  amount Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  ProductCount   ProductCount? @relation(fields: [productCountId], references: [id])
+  productCountId Int?
+}
+
+model DepositCount {
+  id        Int     @id @default(autoincrement())
+  processed Boolean
+
+  DepositCountItem DepositCountItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DepositCountItem {
+  id     Int @id @default(autoincrement())
+  amount Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type           DepositType   @relation(fields: [depositTypeId], references: [id])
+  depositTypeId  Int
+  DepositCount   DepositCount? @relation(fields: [depositCountId], references: [id])
+  depositCountId Int?
+}
+
+model DepositType {
+  id               Int                @id @default(autoincrement())
+  name             String
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  DepositCountItem DepositCountItem[]
+}
+
+// Lijstje met items die nog gehaald moeten worden (als reminder)
+model ShoppingListItem {
+  id       Int     @id @default(autoincrement())
+  // Is dit gekocht
+  ordered  Boolean @default(false)
+  // Moet dit nog gehaald worden of hoeft dat niet meer
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  Product   Product @relation(fields: [productId], references: [id])
+  productId Int
+
+  Store   Store? @relation(fields: [storeId], references: [id])
+  storeId Int?
+}
+
+model Party {
+  id   Int      @id @default(autoincrement())
+  name String
+  date DateTime
+
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  PartyGroup   PartyGroup? @relation(fields: [partyGroupId], references: [id])
+  partyGroupId Int?
+}
+
+// Multiple parties combined
+// e.g. Kick-in, Bata, etc.
+model PartyGroup {
+  id      Int     @id @default(autoincrement())
+  name    String
+  parties Party[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Reminder {
+  id        Int      @id @default(autoincrement())
+  text      String
+  url       String?
+  date      DateTime
+  // Waar moet hij staan?
+  orderFlow String   @default("home")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
