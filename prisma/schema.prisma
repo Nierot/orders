@@ -274,3 +274,11 @@ model Reminder {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Setting {
+  id        Int      @id @default(autoincrement())
+  key       String
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
