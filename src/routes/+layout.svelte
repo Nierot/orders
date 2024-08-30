@@ -12,12 +12,18 @@
 			<AppRailAnchor href="/">Huts</AppRailAnchor>
 		</svelte:fragment>
 
-		<AppRailAnchor href="/" target="_blank" title="Account">(workflows icon)</AppRailAnchor>
-		<AppRailAnchor href="/" target="_blank" title="Account">(producten icon)</AppRailAnchor>
-		<AppRailAnchor href="/" target="_blank" title="Account">(settings icon)</AppRailAnchor>
+		<AppRailAnchor href="/workflows" title="Account" selected={$page.url.pathname === '/workflows'}
+			>(workflows icon)</AppRailAnchor
+		>
+		<AppRailAnchor href="/producten" title="Account" selected={$page.url.pathname === '/producten'}
+			>(producten icon)</AppRailAnchor
+		>
+		<AppRailAnchor href="/instellingen" selected={true} title="Account"
+			>(settings icon)</AppRailAnchor
+		>
 
 		<svelte:fragment slot="trail">
-			<AppRailAnchor href="/" target="_blank" title="Account">(icon)</AppRailAnchor>
+			<AppRailAnchor href="/" target="_blank" title="Account">({$page.url.pathname})</AppRailAnchor>
 		</svelte:fragment>
 	</AppRail>
 
