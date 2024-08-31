@@ -2,7 +2,8 @@
 	import { Avatar } from '@skeletonlabs/skeleton'
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<h1 class="h1">Home</h1>
 
-<Avatar src="https://i.pravatar.cc/" />
+Hier een aantal workflows
+
+<a href="/workflow/regulier">Reguliere bestelling</a>

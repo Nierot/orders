@@ -18,7 +18,7 @@ const config = {
 	plugins: [
 		skeleton({
 			themes: {
-				preset: ['crimson']
+				preset: ['gold-nouveau']
 			}
 		}),
 		// eslint-disable-next-line @typescript-eslint/no-require-imports
