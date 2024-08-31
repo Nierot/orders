@@ -29,6 +29,9 @@ model Product {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  // Is this something we normally order?
+  regularItem  Boolean @default(true)
+  // How many do we have in stock normally?
   regularStock Int @default(0)
 
   picture File? @relation(fields: [fileId], references: [id])

@@ -1,5 +1,4 @@
 <script>
-	import { Avatar } from '@skeletonlabs/skeleton'
 </script>
 
 <h1 class="h1">Home</h1>
