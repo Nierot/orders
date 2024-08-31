@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db'
 
-// Source: https://github.com/ODDInvictus/ibs3/blob/main/src/lib/server/settings/settings.ts
+// Source: https://github.com/ODDInvictus/ibs3/blob/3001e83/src/lib/server/settings/settings.ts
 
 type Settings = {
 	get: (name: Setting, defaultValue?: string) => string
